@@ -6,9 +6,11 @@ import { LeaveInfo } from './components/LeaveInfo';
 import { ToolGuide } from './components/ToolGuide';
 import { Disclaimer } from './components/Disclaimer';
 
+const base = process.env.GITHUB_PAGES ? '/ouderverlof-planner/' : '/';
+
 function App() {
   return (
-    <Router>
+    <Router basename={base}>
       <div className="min-h-screen bg-gray-50">
         <Header />
         <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
