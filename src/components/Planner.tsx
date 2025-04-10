@@ -36,39 +36,42 @@ export const Planner: React.FC = () => {
 
   // Load state from URL on mount
   useEffect(() => {
-  // Check for state in search params
-  const searchParams = new URLSearchParams(window.location.search);
-  const stateParam = searchParams.get('state');
-  
-  if (stateParam) {
-    try {
-      const savedData = decodeState(stateParam);
-      if (savedData) {
-        if (savedData.workPattern) {
-          setWorkPattern(savedData.workPattern);
+  // Load state from query params in hash
+  const hashParts = window.location.hash.split('?');
+  if (hashParts.length > 1) {
+    const searchParams = new URLSearchParams(hashParts[1]);
+    const stateParam = searchParams.get('state');
+    
+    if (stateParam) {
+      try {
+        const savedData = decodeState(stateParam);
+        if (savedData) {
+          if (savedData.workPattern) {
+            setWorkPattern(savedData.workPattern);
+          }
+          if (savedData.phases) {
+            setPhases(savedData.phases);
+          }
+          if (savedData.leaveHours) {
+            setLeaveHours(savedData.leaveHours);
+          }
+          if (savedData.expectedDueDate) {
+            setExpectedDueDate(savedData.expectedDueDate);
+          }
+          if (typeof savedData.contractHours === 'number') {
+            setContractHours(savedData.contractHours);
+          }
         }
-        if (savedData.phases) {
-          setPhases(savedData.phases);
-        }
-        if (savedData.leaveHours) {
-          setLeaveHours(savedData.leaveHours);
-        }
-        if (savedData.expectedDueDate) {
-          setExpectedDueDate(savedData.expectedDueDate);
-        }
-        if (typeof savedData.contractHours === 'number') {
-          setContractHours(savedData.contractHours);
-        }
+      } catch (error) {
+        console.error('Error loading state from URL params:', error);
       }
-    } catch (error) {
-      console.error('Error loading state from URL:', error);
     }
-  }
+  }    
   setIsLoading(false);
 }, []);
 
   // Save state to URL when data changes
-  useEffect(() => {
+   useEffect(() => {
     if (isLoading) return;
 
     const dataToSave = {
@@ -82,7 +85,17 @@ export const Planner: React.FC = () => {
 
     try {
       const encodedState = encodeState(dataToSave);
-      window.history.replaceState(null, '', `#${encodedState}`);
+      
+      // With HashRouter, we need to handle the URL construction manually
+      // Extract the current route path from the hash
+      const hashParts = window.location.hash.split('?');
+      const routePath = hashParts[0] || '#/';
+      
+      // Construct the new URL with hash route and state parameter
+      const newUrl = `${window.location.pathname}${routePath}?state=${encodedState}`;
+      
+      // Update the URL
+      window.history.replaceState(null, '', newUrl);
     } catch (error) {
       console.error('Error saving state to URL:', error);
     }
