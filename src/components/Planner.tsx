@@ -36,33 +36,36 @@ export const Planner: React.FC = () => {
 
   // Load state from URL on mount
   useEffect(() => {
-    const hash = window.location.hash;
-    if (hash) {
-      try {
-        const savedData = decodeState(hash);
-        if (savedData) {
-          if (savedData.workPattern) {
-            setWorkPattern(savedData.workPattern);
-          }
-          if (savedData.phases) {
-            setPhases(savedData.phases);
-          }
-          if (savedData.leaveHours) {
-            setLeaveHours(savedData.leaveHours);
-          }
-          if (savedData.expectedDueDate) {
-            setExpectedDueDate(savedData.expectedDueDate);
-          }
-          if (typeof savedData.contractHours === 'number') {
-            setContractHours(savedData.contractHours);
-          }
+  // Check for state in search params
+  const searchParams = new URLSearchParams(window.location.search);
+  const stateParam = searchParams.get('state');
+  
+  if (stateParam) {
+    try {
+      const savedData = decodeState(stateParam);
+      if (savedData) {
+        if (savedData.workPattern) {
+          setWorkPattern(savedData.workPattern);
         }
-      } catch (error) {
-        console.error('Error loading state from URL:', error);
+        if (savedData.phases) {
+          setPhases(savedData.phases);
+        }
+        if (savedData.leaveHours) {
+          setLeaveHours(savedData.leaveHours);
+        }
+        if (savedData.expectedDueDate) {
+          setExpectedDueDate(savedData.expectedDueDate);
+        }
+        if (typeof savedData.contractHours === 'number') {
+          setContractHours(savedData.contractHours);
+        }
       }
+    } catch (error) {
+      console.error('Error loading state from URL:', error);
     }
-    setIsLoading(false);
-  }, []);
+  }
+  setIsLoading(false);
+}, []);
 
   // Save state to URL when data changes
   useEffect(() => {
