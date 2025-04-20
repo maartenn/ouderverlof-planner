@@ -6,11 +6,12 @@ import { LeaveInfo } from './components/LeaveInfo';
 import { ToolGuide } from './components/ToolGuide';
 import { Disclaimer } from './components/Disclaimer';
 
-const base = process.env.GITHUB_PAGES ? '/ouderverlof-planner/' : '/';
+// Base path is handled by vite.config.ts and HashRouter default behavior
 
 function App() {
   return (
-    <Router basename={base}>
+    // Removed the basename prop from HashRouter
+    <Router>
       <div className="min-h-screen bg-gray-50">
         <Header />
         <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">

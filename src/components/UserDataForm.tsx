@@ -22,8 +22,8 @@ interface UserDataFormProps {
   contractHours: number;
 }
 
-export const UserDataForm: React.FC<UserDataFormProps> = ({ 
-  onSubmit, 
+export const UserDataForm: React.FC<UserDataFormProps> = ({
+  onSubmit,
   onPhasesChange,
   onLeaveHoursChange,
   onWorkPatternChange,
@@ -43,7 +43,7 @@ export const UserDataForm: React.FC<UserDataFormProps> = ({
   const { t } = useTranslation();
 
   const calculateLeaveHours = (hours: number) => {
-    const weeklyHours = hours;
+    const weeklyHours = Math.max(0, hours); // Ensure non-negative
     const dailyHours = weeklyHours / 5;
 
     return {
@@ -55,11 +55,14 @@ export const UserDataForm: React.FC<UserDataFormProps> = ({
   };
 
   const convertHoursToDays = (hours: number): number => {
-    return Number((hours / (contractHours / 5)).toFixed(2));
+    const dailyHours = contractHours / 5;
+    if (dailyHours <= 0) return 0; // Avoid division by zero or negative
+    return Number((Math.max(0, hours) / dailyHours).toFixed(2));
   };
 
   const convertDaysToHours = (days: number): number => {
-    return Number((days * (contractHours / 5)).toFixed(2));
+    const dailyHours = contractHours / 5;
+    return Number((Math.max(0, days) * dailyHours).toFixed(2));
   };
 
   useEffect(() => {
@@ -70,10 +73,11 @@ export const UserDataForm: React.FC<UserDataFormProps> = ({
     onLeaveHoursChange(leaveHours);
   }, [leaveHours, onLeaveHoursChange]);
 
-  const handleContractHoursChange = (newHours: number) => {
+  const handleContractHoursChange = (newHoursInput: number) => {
+    const newHours = Math.max(0, newHoursInput); // Prevent negative values
     setContractHours(newHours);
     onContractHoursChange(newHours);
-    
+
     // Calculate new leave hours based on contract hours
     const newLeaveHours = calculateLeaveHours(newHours);
     setLeaveHours(newLeaveHours);
@@ -85,7 +89,8 @@ export const UserDataForm: React.FC<UserDataFormProps> = ({
     onExpectedDueDateChange(date);
   };
 
-  const handleLeaveHoursChange = (type: keyof typeof leaveHours, value: number) => {
+  const handleLeaveHoursChange = (type: keyof typeof leaveHours, valueInput: number) => {
+    const value = Math.max(0, valueInput); // Prevent negative values
     const newValue = showAsDays ? convertDaysToHours(value) : value;
     const newLeaveHours = {
       ...leaveHours,
@@ -124,6 +129,7 @@ export const UserDataForm: React.FC<UserDataFormProps> = ({
               type="number"
               value={contractHours}
               onChange={(e) => handleContractHoursChange(Number(e.target.value))}
+              min="0" // Prevent negative input in browser
               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
               placeholder="40"
             />
@@ -179,10 +185,11 @@ export const UserDataForm: React.FC<UserDataFormProps> = ({
                 type="number"
                 value={showAsDays ? convertHoursToDays(leaveHours.GV) : leaveHours.GV}
                 onChange={(e) => handleLeaveHoursChange('GV', Number(e.target.value))}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-                step="0.01"
+                min="0" // Prevent negative input in browser
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 pr-12" // Added padding-right
+                step={showAsDays ? "0.01" : "1"} // Adjust step based on unit
               />
-              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-gray-500">
+              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-gray-500 pointer-events-none"> {/* Added pointer-events-none */}
                 {showAsDays ? t('common.days') : t('common.hours')}
               </span>
             </div>
@@ -200,10 +207,11 @@ export const UserDataForm: React.FC<UserDataFormProps> = ({
                 type="number"
                 value={showAsDays ? convertHoursToDays(leaveHours.AGV) : leaveHours.AGV}
                 onChange={(e) => handleLeaveHoursChange('AGV', Number(e.target.value))}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-                step="0.01"
+                min="0" // Prevent negative input in browser
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 pr-12" // Added padding-right
+                step={showAsDays ? "0.01" : "1"} // Adjust step based on unit
               />
-              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-gray-500">
+              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-gray-500 pointer-events-none"> {/* Added pointer-events-none */}
                 {showAsDays ? t('common.days') : t('common.hours')}
               </span>
             </div>
@@ -221,10 +229,11 @@ export const UserDataForm: React.FC<UserDataFormProps> = ({
                 type="number"
                 value={showAsDays ? convertHoursToDays(leaveHours.BOV) : leaveHours.BOV}
                 onChange={(e) => handleLeaveHoursChange('BOV', Number(e.target.value))}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-                step="0.01"
+                min="0" // Prevent negative input in browser
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 pr-12" // Added padding-right
+                step={showAsDays ? "0.01" : "1"} // Adjust step based on unit
               />
-              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-gray-500">
+              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-gray-500 pointer-events-none"> {/* Added pointer-events-none */}
                 {showAsDays ? t('common.days') : t('common.hours')}
               </span>
             </div>
@@ -242,10 +251,11 @@ export const UserDataForm: React.FC<UserDataFormProps> = ({
                 type="number"
                 value={showAsDays ? convertHoursToDays(leaveHours.VD) : leaveHours.VD}
                 onChange={(e) => handleLeaveHoursChange('VD', Number(e.target.value))}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-                step="0.01"
+                min="0" // Prevent negative input in browser
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 pr-12" // Added padding-right
+                step={showAsDays ? "0.01" : "1"} // Adjust step based on unit
               />
-              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-gray-500">
+              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-gray-500 pointer-events-none"> {/* Added pointer-events-none */}
                 {showAsDays ? t('common.days') : t('common.hours')}
               </span>
             </div>
@@ -255,8 +265,8 @@ export const UserDataForm: React.FC<UserDataFormProps> = ({
       </div>
 
       <div className="bg-white p-6 rounded-lg shadow">
-        <LeavePhaseForm 
-          phases={leavePhases} 
+        <LeavePhaseForm
+          phases={leavePhases}
           onChange={handlePhasesChange}
           expectedDueDate={expectedDueDate}
           defaultWorkPattern={workPattern}
