@@ -6,11 +6,8 @@ import { LeaveInfo } from './components/LeaveInfo';
 import { ToolGuide } from './components/ToolGuide';
 import { Disclaimer } from './components/Disclaimer';
 
-// Base path is handled by vite.config.ts and HashRouter default behavior
-
 function App() {
   return (
-    // Removed the basename prop from HashRouter
     <Router>
       <div className="min-h-screen bg-gray-50">
         <Header />
